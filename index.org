@@ -1,0 +1,17 @@
+#+title: Orthogonalizing Variables in a Regression
+#+author: Matt Brigida
+#+PROPERTY: header-args  :eval no
+#+setupfile: ./darksun.theme
+
+#+begin_comment
+darksun theme
+https://gitlab.com/OlMon/org-themes/-/raw/master/src/darksun/darksun.theme?ref_type=heads
+
+See list of org themes here: https://olmon.gitlab.io/org-themes/
+
+Can access all themes in .emacs/org-themes
+#+end_comment
+
+* Motivation
+
+Say we want to include two correlated variables as explanatory variables in a regression.  
