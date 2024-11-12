@@ -3,13 +3,13 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-11-11 Mon 22:23 -->
+<!-- 2024-11-11 Mon 22:43 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Orthogonalizing Variables in a Regression</title>
 <meta name="author" content="Matt Brigida" />
 <meta name="generator" content="Org Mode" />
-<style type="text/css">
+<style>
   #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
@@ -1094,23 +1094,28 @@ hsAddReviewPanels();
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org2e0fc25">1. Motivation</a></li>
+<li><a href="#orgb707654">1. Motivation</a></li>
+<li><a href="#orgadcc3cf">2. Example</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org2e0fc25" class="outline-2">
-<h2 id="org2e0fc25"><span class="section-number-2">1.</span> Motivation</h2>
+<div id="outline-container-orgb707654" class="outline-2">
+<h2 id="orgb707654"><span class="section-number-2">1.</span> Motivation</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-Say we want to include two correlated variables as explanatory variables in a regression.  Doing this causes <code>multicollinearity</code>, which does not bias coefficients however does increase coefficient standard errors. Note, you can for excessive multicollinearity with variance inflation factors.
+Say we want to include two correlated variables as explanatory variables in a regression.  Doing this causes <code>multicollinearity</code>, which does not bias coefficients however does increase coefficient standard errors. Note, you can for excessive multicollinearity with variance inflation factors.  To remove the correlation between the variables we can use a process refered to as <i>orthogonalization</i> in the finance literature.  We describe this process in the example below.
 </p>
 </div>
+</div>
+
+<div id="outline-container-orgadcc3cf" class="outline-2">
+<h2 id="orgadcc3cf"><span class="section-number-2">2.</span> Example</h2>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Matt Brigida</p>
-<p class="date">Created: 2024-11-11 Mon 22:23</p>
+<p class="date">Created: 2024-11-11 Mon 22:43</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
