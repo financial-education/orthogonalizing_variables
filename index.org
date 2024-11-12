@@ -14,4 +14,6 @@ Can access all themes in .emacs/org-themes
 
 * Motivation
 
-Say we want to include two correlated variables as explanatory variables in a regression.  
+Say we want to include two correlated variables as explanatory variables in a regression.  Doing this causes =multicollinearity=, which does not bias coefficients however does increase coefficient standard errors. Note, you can for excessive multicollinearity with variance inflation factors.
+
+
