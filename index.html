@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-11-12 Tue 20:31 -->
+<!-- 2024-11-13 Wed 11:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Orthogonalizing Variables in a Regression</title>
@@ -196,6 +196,38 @@
 <style type="text/css">
 /* Base */html,body {    background-color: #222;    min-height: 100%;    line-height: 1.5;}body {    color: #fafafa;    font-family: "Courier New";}::selection {    background-color:  #2ecc40;    color: white;}/* Responsive content positioning */@media only screen and (min-width: 1020px) /* Large screens */{    body{        padding: 10vh 25vw;    }}@media only screen and (max-width: 1020px) and (min-width: 750px) /* Small screens */{    body{        padding: 5vh 10vw;    }}@media only screen and (max-width: 750px) /* Small screens */{    body{        padding: 2vh 5vw;    }}/* Headers */h1{font-size: 2.5rem;}h2{font-size: 1.7rem;}h1 > .subtitle, h3, h4, h5, h6{font-size: 1.3rem;}.title{    margin-bottom: 2.5rem;}/* Padding & Margin */* {margin: 0; padding: 0;}pre, blockquote, ul, ol, p, table{    margin: 1rem 0;}h1, h2{margin-top: 2rem; line-height: 2rem;}h3, h4, h5, h6{margin-top: 1rem;}/* Links  */a, a:visited {    color: #01ff70;    text-decoration: underline;}a:hover, a:focus, a:active {    color: #2ecc40;}/* Code */pre {    font-family: "Courier New";    padding: .5rem;    background-color: #333;    padding: 0.5rem;    border-radius: 0.2rem;    font-size: 0.9rem;    color: #EEE;    overflow-x: auto;}.org-keyword{    color: #01ff70;}.org-rainbow-delimiters-depth-1{    color: #2ecc40;}.org-rainbow-delimiters-depth-2{    color: #01ff70;}/* Blockquotes */blockquote {    border-left: 3px solid #01ff70;    padding-left: 1rem;}li{    list-style-position: inside;}/* Tags */.tag{    margin-top: 0.5rem;    display: block;    color: white;    font-size: var(--font-size-xsmall);}.tag > span{		font-weight: 400;    font-size: 0.8rem;    background-color: #444;    text-transform: uppercase;    border-radius: 2px;    width: fit-content;    height: auto;    padding: 1px 5px;}/* Keywords */.todo{    color: #2ecc40;}.done{    color: #444;}/* Overflows */.outline-text-2, .outline-text-3, .outline-text-4{	  max-width: 100%;	  overflow-x: auto;}/* Table */tr:nth-child(even) {    background-color: #333;}th, td{    padding: 0.5rem;    text-align: center;}.underline{    text-decoration: underline;}img{    max-width: 100%;    height: auto;}
 </style>
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="content" class="content">
@@ -204,14 +236,14 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org572527e">1. Motivation</a></li>
-<li><a href="#org50909b2">2. Example in R</a></li>
+<li><a href="#org0bda060">1. Motivation</a></li>
+<li><a href="#org16fa097">2. Example in R</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org572527e" class="outline-2">
-<h2 id="org572527e"><span class="section-number-2">1.</span> Motivation</h2>
+<div id="outline-container-org0bda060" class="outline-2">
+<h2 id="org0bda060"><span class="section-number-2">1.</span> Motivation</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Say we want to include two correlated variables as explanatory variables in a regression.  Doing this causes <code>multicollinearity</code>, which does not bias coefficients however does increase coefficient standard errors. Note, you can for excessive multicollinearity with variance inflation factors.  To remove the correlation between the variables we can use a process refered to as <i>orthogonalization</i> in the finance literature.  We describe this process in the example below.
@@ -219,8 +251,8 @@ Say we want to include two correlated variables as explanatory variables in a re
 </div>
 </div>
 
-<div id="outline-container-org50909b2" class="outline-2">
-<h2 id="org50909b2"><span class="section-number-2">2.</span> Example in R</h2>
+<div id="outline-container-org16fa097" class="outline-2">
+<h2 id="org16fa097"><span class="section-number-2">2.</span> Example in R</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 I was going to do the example in python, however the <code>yfinance</code> package was broken and so I will use R.  R has the added benefit that running regressions and extracting residuals is much more straightforward than in the various python statistical libraries.
@@ -275,13 +307,25 @@ We can now estimate a correlation coefficient between daily crude oil and natura
 
 
 <p>
-Ok, that correlation is not too bad.  We could estimate the regression without orthogonalizing (checking variance inflation factors), however we'll continue.  The line of code below 
+Ok, that correlation is not too bad.  We could estimate the regression without orthogonalizing (checking variance inflation factors), however we'll continue.  The line of code below estimates the parameters of the following regression:
+</p>
+
+<p>
+\[oil_t = \alpha + \beta ng_t + \epsilon_t\]
+</p>
+
+<p>
+and extracts the estimated residuals \(\hat{\epsilon}_t\) into the variable names <code>oil_orthogonalized</code>.
 </p>
 
 <div class="org-src-container">
 <pre class="src src-R">oil_orthogonalized <span style="color: #268bd2; font-weight: bold;">&lt;-</span> lm(data$oil ~ data$ng)$resid
 </pre>
 </div>
+
+<p>
+Now if we calculated the correlation between our orthogonalized crude oil and natural gas returns we find:
+</p>
 
 <div class="org-src-container">
 <pre class="src src-R">cor(oil_orthogonalized, data$ng)
@@ -303,25 +347,29 @@ Which is computer for 0.  Now there is no correlation between crude oil and natu
 </pre>
 </div>
 
-<p>
+<pre class="example" id="org1e37b20">
 ## Coefficients:
 ##                     Estimate Std. Error t value Pr(&gt;|t|)    
 ## (Intercept)        0.0004347  0.0001755   2.477   0.0133 *  
-## oil<sub>orthogonalized</sub> 0.1965857  0.0075897  25.902  &lt; 2e-16 <b>*</b>
-## data$ng            0.0409667  0.0058139   7.046 2.12e-12 <b>*</b>
-## &#x2014;
+## oil_orthogonalized 0.1965857  0.0075897  25.902  &lt; 2e-16 ***
+## data$ng            0.0409667  0.0058139   7.046 2.12e-12 ***
+## ---
 ## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 ## 
 ## Residual standard error: 0.01167 on 4420 degrees of freedom
 ## Multiple R-squared:  0.1402,	Adjusted R-squared:  0.1398 
 ## F-statistic: 360.3 on 2 and 4420 DF,  p-value: &lt; 2.2e-16
+</pre>
+
+<p>
+The only downside is it is now a bit harder to interpret the coefficient on oil.  We <b>can't</b> say a 1% increase in oil is consistent with a 0.19% increase in the market&#x2014;we have to say a 1% increase in oil which is <b>uncorrelated with natural gas prices</b>.  So we don't have to worry about multicollinearity but we so have a harder time interpreting the regression.  Of course if oil is our main variables of interest, you would choose to orthogonalize natural gas with respect to oil, so we have no difficulty interpreting the coefficient on oil.  
 </p>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Matt Brigida</p>
-<p class="date">Created: 2024-11-12 Tue 20:31</p>
+<p class="date">Created: 2024-11-13 Wed 11:30</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

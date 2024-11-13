@@ -52,13 +52,17 @@ cor(data$oil, data$ng)
 #+RESULTS:
 : 0.16688267808796
 
-Ok, that correlation is not too bad.  We could estimate the regression without orthogonalizing (checking variance inflation factors), however we'll continue.  The line of code below 
+Ok, that correlation is not too bad.  We could estimate the regression without orthogonalizing (checking variance inflation factors), however we'll continue.  The line of code below estimates the parameters of the following regression:
+
+$$oil_t = \alpha + \beta ng_t + \epsilon_t$$
+
+and extracts the estimated residuals $\hat{\epsilon}_t$ into the variable names =oil_orthogonalized=.
 
 #+begin_src R :session r :results nil :exports both
 oil_orthogonalized <- lm(data$oil ~ data$ng)$resid
 #+end_src
 
-#+RESULTS:
+Now if we calculated the correlation between our orthogonalized crude oil and natural gas returns we find:
 
 #+begin_src R :session r :results nil :exports both
 cor(oil_orthogonalized, data$ng)
@@ -74,7 +78,7 @@ Which is computer for 0.  Now there is no correlation between crude oil and natu
 summary(lm(data$market ~ oil_orthogonalized + data$ng))
 #+end_src
 
-#+RESULTS:
+#+begin_example
 ## Coefficients:
 ##                     Estimate Std. Error t value Pr(>|t|)    
 ## (Intercept)        0.0004347  0.0001755   2.477   0.0133 *  
@@ -86,4 +90,6 @@ summary(lm(data$market ~ oil_orthogonalized + data$ng))
 ## Residual standard error: 0.01167 on 4420 degrees of freedom
 ## Multiple R-squared:  0.1402,	Adjusted R-squared:  0.1398 
 ## F-statistic: 360.3 on 2 and 4420 DF,  p-value: < 2.2e-16
- 
+#+end_example
+
+The only downside is it is now a bit harder to interpret the coefficient on oil.  We *can't* say a 1% increase in oil is consistent with a 0.19% increase in the market---we have to say a 1% increase in oil which is *uncorrelated with natural gas prices*.  So we don't have to worry about multicollinearity but we so have a harder time interpreting the regression.  Of course if oil is our main variables of interest, you would choose to orthogonalize natural gas with respect to oil, so we have no difficulty interpreting the coefficient on oil.  
