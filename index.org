@@ -1,7 +1,7 @@
 #+title: Orthogonalizing Variables in a Regression
 #+author: Matt Brigida
-#+PROPERTY: header-args  :eval yes
-#+setupfile: ./darksun.theme
+#+PROPERTY: header-args  :eval no
+#+setupfile: ~/.emacs.d/org-themes/src/retro_dark/retro_dark.theme
 
 #+begin_comment
 darksun theme
@@ -16,12 +16,19 @@ Can access all themes in .emacs/org-themes
 
 Say we want to include two correlated variables as explanatory variables in a regression.  Doing this causes =multicollinearity=, which does not bias coefficients however does increase coefficient standard errors. Note, you can for excessive multicollinearity with variance inflation factors.  To remove the correlation between the variables we can use a process refered to as /orthogonalization/ in the finance literature.  We describe this process in the example below.
 
-* Example
+* Example in R
+
+I was going to do the example in python, however the =yfinance= package was broken and so I will use R.  R has the added benefit that running regressions and extracting residuals is much more straightforward than in the various python statistical libraries.
+
+Say we want to test whether crude oil and natural gas prices affect stock market prices, however we are concerned that crude oil and natural gas returns might be too correlated.  We therefore want to extract the part of crude oil returns which are uncorrelated with natural gas returns.  We could also just estimate the regression and use variance inflation factors to see the effect of multicollinearity, but we'll do this in another notebook.
+
+We'll load the =quantmod= library to pull ETF prices:
 
 #+begin_src R :session r :results nil :exports code
 library(quantmod)
 #+end_src
 
+Then pull daily ETF data for the stock market, crude oil, and natural gas:
 
 #+begin_src R :session r :results nil :exports code
 market <- getSymbols("spy", auto.assign = FALSE)
@@ -29,20 +36,14 @@ oil <- getSymbols("uso", auto.assign = FALSE)
 ng <- getSymbols("ung", auto.assign = FALSE)
 #+end_src
 
+Then convert the prices to returns and merge to get returns over a common time interval:
+
 #+begin_src R :session r :results nil :exports both
-  data <- merge.xts(Delt(Cl(oil)), Delt(Cl(ng)), Delt(Cl(market)), join="inner")[-1,]
-  names(data) <- c("oil", "ng", "market")
-  tail(data)
+data <- merge.xts(Delt(Cl(oil)), Delt(Cl(ng)), Delt(Cl(market)), join="inner")[-1,]
+names(data) <- c("oil", "ng", "market")
 #+end_src
 
-#+RESULTS:
-|   0.0315190832861485 |  0.0464744309819454 | -0.00215393057592739 |
-|  0.00592276801701153 |  -0.040581980828226 |   0.0120917756409302 |
-| -0.00254251883943779 |  0.0271348890529679 |   0.0248655549103136 |
-|  0.00160991072052741 | -0.0163170194261311 |   0.0077321458684938 |
-|  -0.0204929859850502 | -0.0102685715645954 |  0.00433172235740953 |
-|  -0.0299466004958637 |   0.101356782508288 | 0.000952886744834291 |
-
+We can now estimate a correlation coefficient between daily crude oil and natural gas returns:
 
 #+begin_src R :session r :results nil :exports both
 cor(data$oil, data$ng)
@@ -51,6 +52,7 @@ cor(data$oil, data$ng)
 #+RESULTS:
 : 0.16688267808796
 
+Ok, that correlation is not too bad.  We could estimate the regression without orthogonalizing (checking variance inflation factors), however we'll continue.  The line of code below 
 
 #+begin_src R :session r :results nil :exports both
 oil_orthogonalized <- lm(data$oil ~ data$ng)$resid
