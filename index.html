@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-11-11 Mon 22:43 -->
+<!-- 2024-11-12 Tue 19:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Orthogonalizing Variables in a Regression</title>
@@ -1094,14 +1094,14 @@ hsAddReviewPanels();
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgb707654">1. Motivation</a></li>
-<li><a href="#orgadcc3cf">2. Example</a></li>
+<li><a href="#org257e41f">1. Motivation</a></li>
+<li><a href="#org1820ead">2. Example</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgb707654" class="outline-2">
-<h2 id="orgb707654"><span class="section-number-2">1.</span> Motivation</h2>
+<div id="outline-container-org257e41f" class="outline-2">
+<h2 id="org257e41f"><span class="section-number-2">1.</span> Motivation</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Say we want to include two correlated variables as explanatory variables in a regression.  Doing this causes <code>multicollinearity</code>, which does not bias coefficients however does increase coefficient standard errors. Note, you can for excessive multicollinearity with variance inflation factors.  To remove the correlation between the variables we can use a process refered to as <i>orthogonalization</i> in the finance literature.  We describe this process in the example below.
@@ -1109,13 +1109,134 @@ Say we want to include two correlated variables as explanatory variables in a re
 </div>
 </div>
 
-<div id="outline-container-orgadcc3cf" class="outline-2">
-<h2 id="orgadcc3cf"><span class="section-number-2">2.</span> Example</h2>
+<div id="outline-container-org1820ead" class="outline-2">
+<h2 id="org1820ead"><span class="section-number-2">2.</span> Example</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+<pre class="src src-R">library(quantmod)
+</pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-R">market &lt;- getSymbols("spy", auto.assign = FALSE)
+oil &lt;- getSymbols("uso", auto.assign = FALSE)
+ng &lt;- getSymbols("ung", auto.assign = FALSE)
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-R">data &lt;- merge.xts(Delt(Cl(oil)), Delt(Cl(ng)), Delt(Cl(market)), join="inner")[-1,]
+names(data) &lt;- c("oil", "ng", "market")
+tail(data)
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-right">0.0315190832861485</td>
+<td class="org-right">0.0464744309819454</td>
+<td class="org-right">-0.00215393057592739</td>
+</tr>
+
+<tr>
+<td class="org-right">0.00592276801701153</td>
+<td class="org-right">-0.040581980828226</td>
+<td class="org-right">0.0120917756409302</td>
+</tr>
+
+<tr>
+<td class="org-right">-0.00254251883943779</td>
+<td class="org-right">0.0271348890529679</td>
+<td class="org-right">0.0248655549103136</td>
+</tr>
+
+<tr>
+<td class="org-right">0.00160991072052741</td>
+<td class="org-right">-0.0163170194261311</td>
+<td class="org-right">0.0077321458684938</td>
+</tr>
+
+<tr>
+<td class="org-right">-0.0204929859850502</td>
+<td class="org-right">-0.0102685715645954</td>
+<td class="org-right">0.00433172235740953</td>
+</tr>
+
+<tr>
+<td class="org-right">-0.0299466004958637</td>
+<td class="org-right">0.101356782508288</td>
+<td class="org-right">0.000952886744834291</td>
+</tr>
+</tbody>
+</table>
+
+
+<div class="org-src-container">
+<pre class="src src-R">cor(data$oil, data$ng)
+</pre>
+</div>
+
+<pre class="example">
+0.16688267808796
+</pre>
+
+
+
+<div class="org-src-container">
+<pre class="src src-R">oil_orthogonalized &lt;- lm(data$oil ~ data$ng)$resid
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-R">cor(oil_orthogonalized, data$ng)
+</pre>
+</div>
+
+<pre class="example">
+4.1870964646196e-17
+</pre>
+
+
+<p>
+Which is computer for 0.  Now there is no correlation between crude oil and natural gas, and we can run the following regression without worrying about the effect of multicollinearity.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-R">summary(lm(data$market ~ oil_orthogonalized + data$ng))
+</pre>
+</div>
+
+<p>
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        0.0004347  0.0001755   2.477   0.0133 *  
+## oil<sub>orthogonalized</sub> 0.1965857  0.0075897  25.902  &lt; 2e-16 <b>*</b>
+## data$ng            0.0409667  0.0058139   7.046 2.12e-12 <b>*</b>
+## &#x2014;
+## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+## 
+## Residual standard error: 0.01167 on 4420 degrees of freedom
+## Multiple R-squared:  0.1402,	Adjusted R-squared:  0.1398 
+## F-statistic: 360.3 on 2 and 4420 DF,  p-value: &lt; 2.2e-16
+</p>
+</div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Matt Brigida</p>
-<p class="date">Created: 2024-11-11 Mon 22:43</p>
+<p class="date">Created: 2024-11-12 Tue 19:48</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
